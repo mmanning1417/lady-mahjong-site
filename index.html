@@ -166,12 +166,32 @@
   .tier p { margin: 0.3rem 0; font-size: 0.97rem; }
   .tier .check { margin: 0.4rem 0 0.6rem; }
   .tier-note { font-size: 0.9rem; color: var(--ink-soft); margin-top: auto; padding-top: 0.5rem; }
-  /* Lessons: motion + picker (cards rise in, lift & tilt under the cursor, prices pop, hearts beat; JS adds .js to <html>) */
-  .tiers { perspective: 1200px; }
-  .tier { position: relative; isolation: isolate; scroll-margin-top: 90px;
+  /* ===== Learn & Play: motion + interaction (JS adds .js to <html>; everything is gated by prefers-reduced-motion) ===== */
+  #lessons { position: relative; overflow-x: clip; }
+  #lessons > .in { position: relative; z-index: 1; }
+  /* ambient tiles & hearts drifting behind the section (parallaxed on scroll by JS) */
+  .floaters { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .floaters .fl { position: absolute; left: var(--x); top: var(--y); font-size: var(--size, 2rem); opacity: var(--o, 0.13); will-change: transform; }
+  .floaters .fl i { display: block; font-style: normal; animation: floaty var(--dur, 14s) ease-in-out infinite; animation-delay: var(--delay, 0s); }
+  @keyframes floaty { 0%, 100% { transform: translate3d(0, 0, 0) rotate(-8deg); } 50% { transform: translate3d(14px, -30px, 0) rotate(10deg); } }
+  /* heading words, intro and chips cascade in */
+  .js #lessons h2 .w { display: inline-block; opacity: 0; transform: translateY(0.55em) rotate(2deg);
+    transition: opacity 0.5s ease, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1); transition-delay: calc(var(--k, 0) * 45ms); }
+  .js #lessons.lessons-in h2 .w { opacity: 1; transform: none; }
+  .js #lessons .sec-intro, .js .picker-q { opacity: 0; transform: translateY(12px); transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+  .js #lessons.lessons-in .sec-intro { opacity: 1; transform: none; transition-delay: 0.35s; }
+  .js #lessons.lessons-in .picker-q { opacity: 1; transform: none; transition-delay: 0.5s; }
+  .js .picker .chip { opacity: 0; }
+  .js #lessons.lessons-in .picker .chip { opacity: 1; animation: chip-in 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) backwards; animation-delay: calc(0.55s + var(--k, 0) * 90ms); }
+  @keyframes chip-in { from { opacity: 0; transform: translateY(14px) scale(0.9); } to { opacity: 1; transform: none; } }
+  .beat { display: inline-block; transform-origin: center; animation: heartbeat 2.4s ease-in-out infinite; }
+  .beat-2 { animation-delay: 0.35s; }
+  @keyframes heartbeat { 0%, 100% { transform: scale(1); } 12% { transform: scale(1.22); } 24% { transform: scale(1); } 36% { transform: scale(1.12); } 55% { transform: scale(1); } }
+  /* cards: dealt onto the table like tiles, then lift & tilt under the cursor with a brand-tinted glow */
+  .tiers { perspective: 1400px; }
+  .tier { position: relative; isolation: isolate; scroll-margin-top: 90px; perspective: 1100px; cursor: pointer;
     transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease, opacity 0.45s ease; }
   .tier.tilting { transition-duration: 0.12s, 0.45s, 0.45s; }
-  /* cursor glow: a faint brand tint that sits BEHIND the text (z-index -1 inside the card's own stacking context) */
   .tier::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: 0;
     background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), rgba(201,41,95,0.10), rgba(201,41,95,0) 65%);
     transition: opacity 0.35s ease; }
@@ -182,49 +202,72 @@
   .tier:hover .tier-price, .tier.pick .tier-price { transform: scale(1.14) rotate(-5deg); }
   .check li::before { transition: transform 0.25s ease; }
   .check li:hover::before { transform: rotate(-12deg) scale(1.25); }
-  .beat { display: inline-block; transform-origin: center; animation: heartbeat 2.4s ease-in-out infinite; }
-  .beat-2 { animation-delay: 0.35s; }
-  @keyframes heartbeat { 0%, 100% { transform: scale(1); } 12% { transform: scale(1.22); } 24% { transform: scale(1); } 36% { transform: scale(1.12); } 55% { transform: scale(1); } }
-  /* rise-in on scroll (animation, not transition, so it never delays the hover lift) */
   .js .tier { opacity: 0; }
-  .js .tier.in { opacity: 1; animation: tier-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) backwards; animation-delay: var(--d, 0s); }
+  .js .tier.in { opacity: 1; animation: tier-deal 0.95s cubic-bezier(0.34, 1.25, 0.64, 1) backwards; animation-delay: var(--d, 0s); }
   .js .tier.in .check li { animation: li-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards; }
-  .js .tier.in .check li:nth-child(1) { animation-delay: calc(var(--d, 0s) + 0.30s); }
-  .js .tier.in .check li:nth-child(2) { animation-delay: calc(var(--d, 0s) + 0.38s); }
-  .js .tier.in .check li:nth-child(3) { animation-delay: calc(var(--d, 0s) + 0.46s); }
-  .js .tier.in .check li:nth-child(4) { animation-delay: calc(var(--d, 0s) + 0.54s); }
-  .js .tier.in .check li:nth-child(5) { animation-delay: calc(var(--d, 0s) + 0.62s); }
-  @keyframes tier-rise { from { opacity: 0; transform: translateY(36px) scale(0.98); } to { opacity: 1; transform: none; } }
+  .js .tier.in .check li:nth-child(1) { animation-delay: calc(var(--d, 0s) + 0.40s); }
+  .js .tier.in .check li:nth-child(2) { animation-delay: calc(var(--d, 0s) + 0.48s); }
+  .js .tier.in .check li:nth-child(3) { animation-delay: calc(var(--d, 0s) + 0.56s); }
+  .js .tier.in .check li:nth-child(4) { animation-delay: calc(var(--d, 0s) + 0.64s); }
+  .js .tier.in .check li:nth-child(5) { animation-delay: calc(var(--d, 0s) + 0.72s); }
+  @keyframes tier-deal { 0% { opacity: 0; transform: translateY(56px) rotateY(-42deg) rotateX(8deg) scale(0.92); } 55% { opacity: 1; } 100% { opacity: 1; transform: none; } }
   @keyframes li-rise { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
-  /* picker chips */
+  /* card flip: front ⇄ "This is your seat if…" back */
+  .tier-inner { flex: 1; display: grid; transform-style: preserve-3d; transition: transform 0.75s cubic-bezier(0.4, 0.2, 0.2, 1); }
+  .tier.flipped .tier-inner { transform: rotateY(180deg); }
+  .tier-face { grid-area: 1 / 1; display: flex; flex-direction: column; min-width: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .tier-back { transform: rotateY(180deg); }
+  .tier-back .tier-head h3 { font-size: 1.25rem; }
+  .tier-back .btn { margin: 0; padding: 0.65rem 1.2rem; font-size: 0.78rem; }
+  .tier-green .tier-back .btn-fill { background: var(--green); }
+  .tier-green .tier-back .btn-fill:hover { background: var(--green-deep); }
+  .back-actions { margin-top: auto; padding-top: 0.9rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+  .flip-btn { margin-top: auto; align-self: flex-start; font-family: 'Montserrat', 'Segoe UI', sans-serif; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.2; cursor: pointer;
+    background: transparent; color: var(--raspberry); border: 1.5px solid var(--raspberry-soft); border-radius: 999px; padding: 0.45rem 0.9rem;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .tier-note + .flip-btn { margin-top: 0.9rem; }
+  .back-actions .flip-btn { margin-top: 0; }
+  .flip-btn:hover { background: var(--raspberry); color: #fff; border-color: var(--raspberry); transform: translateY(-1px); }
+  .tier-green .flip-btn { color: var(--green); border-color: #d6eadf; }
+  .tier-green .flip-btn:hover { background: var(--green); color: #fff; border-color: var(--green); }
+  .flip-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  /* picker chips: magnetic hover, pressed state, confetti burst (JS) */
   .picker { display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; margin: 0 0 0.2rem; }
   .picker-q { font-family: 'Montserrat', 'Segoe UI', sans-serif; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); margin-right: 0.3rem; }
   .chip { font: inherit; font-size: 0.93rem; line-height: 1.3; cursor: pointer; background: #fff; color: var(--ink);
     border: 2px solid var(--raspberry-soft); border-radius: 999px; padding: 0.5rem 1.05rem;
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.25s ease; }
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.25s ease; }
   .chip:hover { transform: translateY(-2px); border-color: var(--raspberry); box-shadow: 0 6px 14px rgba(201,41,95,0.15); }
-  .chip:active { transform: scale(0.96); }
+  .chip:active { transform: scale(0.94); }
   .chip[aria-pressed="true"] { background: var(--raspberry); border-color: var(--raspberry); color: #fff; box-shadow: 0 8px 18px rgba(201,41,95,0.3); }
   .chip-green:hover { border-color: var(--green); box-shadow: 0 6px 14px rgba(29,77,59,0.15); }
   .chip-green[aria-pressed="true"] { background: var(--green); border-color: var(--green); box-shadow: 0 8px 18px rgba(29,77,59,0.3); }
   .chip:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
-  /* picked card spotlight */
+  .burst { position: fixed; left: 0; top: 0; z-index: 999; pointer-events: none; font-size: var(--s, 1.1rem); line-height: 1; margin: -0.5em 0 0 -0.5em; will-change: transform, opacity;
+    animation: burst var(--t, 0.9s) cubic-bezier(0.15, 0.7, 0.3, 1) forwards; }
+  @keyframes burst { 0% { transform: translate(var(--x0), var(--y0)) scale(0.4) rotate(0deg); opacity: 1; }
+    100% { transform: translate(calc(var(--x0) + var(--dx)), calc(var(--y0) + var(--dy))) scale(1.1) rotate(var(--rot)); opacity: 0; } }
+  /* picked card spotlight + bounce */
   .tiers.has-pick .tier.dim { opacity: 0.55; transform: scale(0.97); }
-  .tiers.has-pick .tier.dim:hover { opacity: 1; transform: translateY(-8px); }
+  .tiers.has-pick .tier.dim:hover, .tiers.has-pick .tier.dim.flipped { opacity: 1; transform: translateY(-8px); }
   .tier.pick { transform: translateY(-8px) scale(1.02); box-shadow: 0 0 0 4px var(--raspberry-soft), 0 22px 44px rgba(42,35,27,0.18); }
   .tier.tier-green.pick { box-shadow: 0 0 0 4px #d6eadf, 0 22px 44px rgba(42,35,27,0.18); }
-  .pick-badge { position: absolute; top: -15px; right: 14px; background: var(--raspberry); color: #fff; white-space: nowrap;
+  .tier.bounce .tier-inner { animation: pick-bounce 0.65s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @keyframes pick-bounce { 0% { scale: 1; } 45% { scale: 1.06; } 100% { scale: 1; } }
+  .pick-badge { position: absolute; top: -15px; right: 14px; z-index: 2; background: var(--raspberry); color: #fff; white-space: nowrap;
     font-family: 'Montserrat', 'Segoe UI', sans-serif; font-weight: 700; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
     padding: 0.35rem 0.8rem; border-radius: 999px; box-shadow: 0 6px 16px rgba(201,41,95,0.35); pointer-events: none;
     opacity: 0; transform: rotate(-4deg) scale(0); transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease; }
   .tier.pick .pick-badge { opacity: 1; transform: rotate(-4deg) scale(1); }
   .tier-green .pick-badge { background: var(--green); box-shadow: 0 6px 16px rgba(29,77,59,0.35); }
   @media (prefers-reduced-motion: reduce) {
-    .js .tier, .js .tier.in, .js .tier.in .check li, .beat, .tier-price, .chip, .pick-badge, .check li::before { animation: none !important; transition: none !important; }
-    .js .tier { opacity: 1; }
-    .tier:hover, .tier:focus-within, .tier.pick, .tiers.has-pick .tier.dim, .tiers.has-pick .tier.dim:hover { transform: none; }
-    .tier:hover .tier-price, .tier.pick .tier-price, .check li:hover::before, .chip:hover, .chip:active { transform: none; }
-    .tier::before { display: none; }
+    .js .tier, .js .tier.in, .js .tier.in .check li, .beat, .tier-price, .chip, .pick-badge, .check li::before, .floaters .fl i,
+    .js #lessons h2 .w, .js #lessons .sec-intro, .js .picker-q, .js .picker .chip, .js #lessons.lessons-in .picker .chip,
+    .tier-inner, .tier.bounce .tier-inner, .flip-btn { animation: none !important; transition: none !important; }
+    .js .tier, .js #lessons h2 .w, .js #lessons .sec-intro, .js .picker-q, .js .picker .chip { opacity: 1; transform: none; }
+    .tier:hover, .tier:focus-within, .tier.pick, .tiers.has-pick .tier.dim, .tiers.has-pick .tier.dim:hover, .tiers.has-pick .tier.dim.flipped { transform: none; }
+    .tier:hover .tier-price, .tier.pick .tier-price, .check li:hover::before, .chip:hover, .chip:active, .flip-btn:hover { transform: none; }
+    .tier::before, .floaters, .burst { display: none; }
   }
   .tier-close {
     font-family: 'Playfair Display', Georgia, serif; font-weight: 600; font-size: 1.3rem; color: var(--green);
@@ -560,6 +603,15 @@
 </section>
 
 <section id="lessons" class="alt">
+  <div class="floaters" aria-hidden="true">
+    <span class="fl" style="--x:3%;--y:14%;--size:2.6rem;--dur:16s;--delay:-2s;--f:0.08"><i>🀄</i></span>
+    <span class="fl" style="--x:91%;--y:7%;--size:2rem;--dur:13s;--delay:-6s;--f:0.14"><i>💕</i></span>
+    <span class="fl" style="--x:80%;--y:74%;--size:3rem;--dur:18s;--delay:-9s;--f:0.06;--o:0.10"><i>🀄</i></span>
+    <span class="fl" style="--x:12%;--y:82%;--size:1.8rem;--dur:15s;--delay:-4s;--f:0.12"><i>💚</i></span>
+    <span class="fl" style="--x:56%;--y:92%;--size:1.6rem;--dur:12s;--delay:-1s;--f:0.16"><i>✨</i></span>
+    <span class="fl" style="--x:40%;--y:5%;--size:1.7rem;--dur:17s;--delay:-7s;--f:0.10"><i>💚</i></span>
+    <span class="fl" style="--x:95%;--y:50%;--size:2.2rem;--dur:14s;--delay:-3s;--f:0.09"><i>💕</i></span>
+  </div>
   <div class="in">
     <div class="sec-head"><span class="label">Learn &amp; play</span></div>
     <h2>Which Lady Mahjong experience is right for you? <span class="beat">💕</span><span class="beat beat-2">💚</span></h2>
@@ -571,28 +623,73 @@
       <button type="button" class="chip" data-tier="2" aria-pressed="false">🀄 I already play</button>
     </div>
     <div class="tiers">
-      <article class="tier">
+      <article class="tier" data-tier="0">
         <span class="pick-badge" aria-hidden="true">This one’s for you!</span>
-        <div class="tier-head"><h3>💕 Beginner Lesson</h3><span class="tier-price">$50</span></div>
-        <p>Learn everything you need to get started:</p>
-        <ul class="check">
-          <li>Tile meanings &amp; game setup</li>
-          <li>Basic rules &amp; gameplay</li>
-          <li>Beginner strategies</li>
-          <li>How to read the Mahjong card</li>
-          <li>Tips for winning hands</li>
-        </ul>
-        <p class="tier-note">✨ Limited to just 8 players for plenty of individual attention!</p>
+        <div class="tier-inner">
+          <div class="tier-face tier-front">
+            <div class="tier-head"><h3>💕 Beginner Lesson</h3><span class="tier-price">$50</span></div>
+            <p>Learn everything you need to get started:</p>
+            <ul class="check">
+              <li>Tile meanings &amp; game setup</li>
+              <li>Basic rules &amp; gameplay</li>
+              <li>Beginner strategies</li>
+              <li>How to read the Mahjong card</li>
+              <li>Tips for winning hands</li>
+            </ul>
+            <p class="tier-note">✨ Limited to just 8 players for plenty of individual attention!</p>
+            <button type="button" class="flip-btn" aria-expanded="false">Is this my seat? ↻</button>
+          </div>
+          <div class="tier-face tier-back" aria-hidden="true">
+            <div class="tier-head"><h3>💕 This is your seat if…</h3></div>
+            <ul class="check">
+              <li>You’ve never played (or it’s been a while)</li>
+              <li>You’d like the basics explained step by step</li>
+              <li>You like a small group: just 8 seats per lesson</li>
+            </ul>
+            <p class="tier-note">We supply the tiles, the mats and the good company. You just bring your 2026 National Mahjong League card!</p>
+            <div class="back-actions"><a class="btn btn-fill" href="#events" tabindex="-1">See lesson dates</a><button type="button" class="flip-btn" tabindex="-1">↩ Flip back</button></div>
+          </div>
+        </div>
       </article>
-      <article class="tier tier-green">
+      <article class="tier tier-green" data-tier="1">
         <span class="pick-badge" aria-hidden="true">This one’s for you!</span>
-        <div class="tier-head"><h3>💚 Guided Play</h3><span class="tier-price">$40</span></div>
-        <p>Already taken a beginner lesson? Come practice with guidance, ask questions, build confidence and keep that game moving!</p>
+        <div class="tier-inner">
+          <div class="tier-face tier-front">
+            <div class="tier-head"><h3>💚 Guided Play</h3><span class="tier-price">$40</span></div>
+            <p>Already taken a beginner lesson? Come practice with guidance, ask questions, build confidence and keep that game moving!</p>
+            <button type="button" class="flip-btn" aria-expanded="false">Is this my seat? ↻</button>
+          </div>
+          <div class="tier-face tier-back" aria-hidden="true">
+            <div class="tier-head"><h3>💚 This is your seat if…</h3></div>
+            <ul class="check">
+              <li>You’ve already taken a beginner lesson</li>
+              <li>You know the basics but want guidance right at the table</li>
+              <li>You’d like to ask questions and build confidence</li>
+            </ul>
+            <p class="tier-note">Come practice with guidance and keep that game moving!</p>
+            <div class="back-actions"><a class="btn btn-fill" href="#events" tabindex="-1">See guided play dates</a><button type="button" class="flip-btn" tabindex="-1">↩ Flip back</button></div>
+          </div>
+        </div>
       </article>
-      <article class="tier">
+      <article class="tier" data-tier="2">
         <span class="pick-badge" aria-hidden="true">This one’s for you!</span>
-        <div class="tier-head"><h3>💕 Open Play</h3><span class="tier-price">$25</span></div>
-        <p>For experienced players ready to play, meet new Mahjong friends and have some fun around the table.</p>
+        <div class="tier-inner">
+          <div class="tier-face tier-front">
+            <div class="tier-head"><h3>💕 Open Play</h3><span class="tier-price">$25</span></div>
+            <p>For experienced players ready to play, meet new Mahjong friends and have some fun around the table.</p>
+            <button type="button" class="flip-btn" aria-expanded="false">Is this my seat? ↻</button>
+          </div>
+          <div class="tier-face tier-back" aria-hidden="true">
+            <div class="tier-head"><h3>💕 This is your seat if…</h3></div>
+            <ul class="check">
+              <li>You know the rules and can play a hand</li>
+              <li>You want to meet new Mahjong friends</li>
+              <li>You have your 2026 National Mahjong League card</li>
+            </ul>
+            <p class="tier-note">We supply the tiles and the mats. Just pull up a chair!</p>
+            <div class="back-actions"><a class="btn btn-fill" href="#events" tabindex="-1">See open play dates</a><button type="button" class="flip-btn" tabindex="-1">↩ Flip back</button></div>
+          </div>
+        </div>
       </article>
     </div>
     <p class="fine">📍 Please note: pricing may vary for special events when the location includes or requires food &amp; beverage charges.</p>
@@ -774,29 +871,114 @@
   document.documentElement.classList.add('js');
   var mq = function (q) { return !!(window.matchMedia && window.matchMedia(q).matches); };
   var reduce = mq('(prefers-reduced-motion: reduce)');
+  var fine = mq('(hover: hover) and (pointer: fine)');
+  var $$ = function (s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); };
+  var lessons = document.getElementById('lessons');
 
-  // Scroll-reveal: event cards (transition) and lesson tiers (animation) rise into view
-  var cards = Array.prototype.slice.call(document.querySelectorAll('.event, .tier'));
+  // Learn & Play heading: split into words so they can cascade in
+  var h2 = lessons && lessons.querySelector('h2');
+  if (h2) {
+    var k = 0;
+    Array.prototype.slice.call(h2.childNodes).forEach(function (node) {
+      if (node.nodeType === 1) { node.classList.add('w'); node.style.setProperty('--k', k++); return; }
+      if (node.nodeType !== 3) return;
+      var frag = document.createDocumentFragment();
+      node.textContent.split(/(\s+)/).forEach(function (part) {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+        var w = document.createElement('span'); w.className = 'w'; w.textContent = part; w.style.setProperty('--k', k++);
+        frag.appendChild(w);
+      });
+      h2.replaceChild(frag, node);
+    });
+  }
+  $$('.picker .chip').forEach(function (c, i) { c.style.setProperty('--k', i); });
+
+  // Prices count up from $0 as their card is dealt
+  function countUp(card, delay) {
+    var el = card.querySelector('.tier-price');
+    if (!el || el.getAttribute('data-done')) return;
+    el.setAttribute('data-done', '1');
+    var target = parseInt(el.textContent.replace(/[^0-9]/g, ''), 10);
+    if (!target || reduce) return;
+    el.textContent = '$0';
+    setTimeout(function () {
+      var t0 = null, dur = 900;
+      function step(ts) {
+        if (t0 === null) t0 = ts;
+        var p = Math.min(1, (ts - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+        el.textContent = '$' + Math.round(target * e);
+        if (p < 1) requestAnimationFrame(step); else el.textContent = '$' + target;
+      }
+      requestAnimationFrame(step);
+    }, delay || 0);
+  }
+
+  // Scroll-reveal: event cards (transition), lesson cards (deal-in animation), lesson heading (word cascade)
+  var cards = $$('.event, .tier');
   if (!('IntersectionObserver' in window) || reduce) {
     cards.forEach(function (c) { c.classList.add('in'); });
+    if (lessons) lessons.classList.add('lessons-in');
   } else {
     var io = new IntersectionObserver(function (entries) {
       var n = 0;
       entries.forEach(function (e) {
         if (!e.isIntersecting) return;
-        var d = (n++ * 0.13) + 's';
-        if (e.target.classList.contains('tier')) e.target.style.setProperty('--d', d);
-        else e.target.style.transitionDelay = d;
+        var d = n++ * 0.13;
+        if (e.target.classList.contains('tier')) { e.target.style.setProperty('--d', d + 's'); countUp(e.target, d * 1000 + 450); }
+        else { e.target.style.transitionDelay = d + 's'; }
         e.target.classList.add('in');
         io.unobserve(e.target);
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
     cards.forEach(function (c) { io.observe(c); });
+    if (h2) {
+      var ioh = new IntersectionObserver(function (entries) {
+        if (entries.some(function (e) { return e.isIntersecting; })) { lessons.classList.add('lessons-in'); ioh.disconnect(); }
+      }, { threshold: 0.3 });
+      ioh.observe(h2);
+    }
   }
 
-  // Lesson cards: lift + tilt toward the cursor with a soft sheen (mouse/trackpad only)
-  var tiers = Array.prototype.slice.call(document.querySelectorAll('.tier'));
-  if (!reduce && mq('(hover: hover) and (pointer: fine)')) {
+  // Floating tiles behind the section: gentle parallax as you scroll
+  var fls = lessons ? $$('.floaters .fl', lessons) : [];
+  if (fls.length && !reduce) {
+    var ticking = false;
+    var parallax = function () {
+      ticking = false;
+      var r = lessons.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) return;
+      var p = (window.innerHeight / 2) - (r.top + r.height / 2);
+      fls.forEach(function (f) {
+        var factor = parseFloat(f.style.getPropertyValue('--f')) || 0.1;
+        f.style.transform = 'translateY(' + (p * factor).toFixed(1) + 'px)';
+      });
+    };
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(parallax); } }, { passive: true });
+    parallax();
+  }
+
+  // Confetti burst (hearts, tiles, sparkles) from a point on screen
+  function burst(x, y, glyphs, count) {
+    if (reduce) return;
+    for (var i = 0; i < count; i++) {
+      var s = document.createElement('span');
+      s.className = 'burst'; s.textContent = glyphs[i % glyphs.length]; s.setAttribute('aria-hidden', 'true');
+      var a = Math.PI * 2 * (i / count) + (Math.random() - 0.5) * 0.6, v = 60 + Math.random() * 70;
+      s.style.setProperty('--x0', x.toFixed(0) + 'px'); s.style.setProperty('--y0', y.toFixed(0) + 'px');
+      s.style.setProperty('--dx', (Math.cos(a) * v).toFixed(1) + 'px');
+      s.style.setProperty('--dy', (Math.sin(a) * v - 30).toFixed(1) + 'px');
+      s.style.setProperty('--rot', ((Math.random() - 0.5) * 240).toFixed(0) + 'deg');
+      s.style.setProperty('--t', (0.7 + Math.random() * 0.5).toFixed(2) + 's');
+      s.style.setProperty('--s', (0.9 + Math.random() * 0.6).toFixed(2) + 'rem');
+      s.addEventListener('animationend', function () { if (this.parentNode) this.parentNode.removeChild(this); });
+      document.body.appendChild(s);
+    }
+  }
+
+  // Lesson cards: lift + tilt toward the cursor with a soft glow (mouse/trackpad only)
+  var tiers = $$('.tier');
+  if (!reduce && fine) {
     tiers.forEach(function (t) {
       t.addEventListener('pointerenter', function () { t.classList.add('tilting'); });
       t.addEventListener('pointermove', function (ev) {
@@ -812,24 +994,59 @@
     });
   }
 
-  // "Which experience is right for you?" picker: a chip spotlights its card (tap again to clear)
+  // Card flip: front <-> "This is your seat if..." back (click anywhere on the card, or the button)
+  function setFlip(t, on, x, y) {
+    t.classList.toggle('flipped', on);
+    var front = t.querySelector('.tier-front'), back = t.querySelector('.tier-back');
+    front.setAttribute('aria-hidden', on ? 'true' : 'false');
+    back.setAttribute('aria-hidden', on ? 'false' : 'true');
+    $$('a, button', front).forEach(function (el) { el.tabIndex = on ? -1 : 0; });
+    $$('a, button', back).forEach(function (el) { el.tabIndex = on ? 0 : -1; });
+    var fb = front.querySelector('.flip-btn');
+    if (fb) fb.setAttribute('aria-expanded', on ? 'true' : 'false');
+    if (x != null) burst(x, y, ['\u2728', '\uD83C\uDC04'], 7);
+  }
+  tiers.forEach(function (t) {
+    t.addEventListener('click', function (ev) {
+      if (ev.target.closest('a')) return;
+      var btn = ev.target.closest('button');
+      if (btn && !btn.classList.contains('flip-btn')) return;
+      if (!btn && window.getSelection && String(window.getSelection())) return;
+      var x = ev.clientX, y = ev.clientY;
+      if (btn && ev.detail === 0) { var r = btn.getBoundingClientRect(); x = r.left + r.width / 2; y = r.top + r.height / 2; }
+      setFlip(t, !t.classList.contains('flipped'), x, y);
+    });
+    t.addEventListener('animationend', function (e) { if (e.animationName === 'pick-bounce') t.classList.remove('bounce'); });
+  });
+
+  // "Find your seat" picker: a chip spotlights its card with a bounce + confetti (tap again to clear)
   var grid = document.querySelector('.tiers');
-  var chips = Array.prototype.slice.call(document.querySelectorAll('.picker .chip'));
-  function pick(idx) {
+  var chips = $$('.picker .chip');
+  function pick(idx, chip) {
     chips.forEach(function (c) { c.setAttribute('aria-pressed', String(c.getAttribute('data-tier') === String(idx))); });
     tiers.forEach(function (t, i) {
       t.classList.toggle('pick', i === idx);
       t.classList.toggle('dim', idx !== null && i !== idx);
+      if (i === idx) { t.classList.remove('bounce'); void t.offsetWidth; t.classList.add('bounce'); }
     });
     if (grid) grid.classList.toggle('has-pick', idx !== null);
-    if (idx !== null && tiers[idx] && window.innerWidth < 900) {
-      tiers[idx].scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+    if (idx !== null && chip) {
+      var r = chip.getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top + r.height / 2, chip.classList.contains('chip-green') ? ['\uD83D\uDC9A', '\u2728', '\uD83C\uDC04'] : ['\uD83D\uDC95', '\u2728', '\uD83C\uDC04'], 14);
+      if (tiers[idx] && window.innerWidth < 900) tiers[idx].scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
     }
   }
   chips.forEach(function (c) {
     c.addEventListener('click', function () {
-      pick(c.getAttribute('aria-pressed') === 'true' ? null : parseInt(c.getAttribute('data-tier'), 10));
+      pick(c.getAttribute('aria-pressed') === 'true' ? null : parseInt(c.getAttribute('data-tier'), 10), c);
     });
+    if (fine && !reduce) {
+      c.addEventListener('pointermove', function (ev) {
+        var r = c.getBoundingClientRect();
+        c.style.translate = ((ev.clientX - (r.left + r.width / 2)) * 0.22).toFixed(1) + 'px ' + ((ev.clientY - (r.top + r.height / 2)) * 0.3).toFixed(1) + 'px';
+      });
+      c.addEventListener('pointerleave', function () { c.style.translate = ''; });
+    }
   });
 })();
 </script>
