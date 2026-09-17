@@ -290,6 +290,77 @@
   .js #lessons.lessons-in .seat-board { opacity: 1; transform: none; transition-delay: 0.45s; }
   @media (max-width: 900px) { .seat-lead { grid-template-columns: 1fr; } }
   @media (max-width: 560px) { .seat-board { padding: 0.75rem 0.7rem 0.65rem; } .fchar { width: 15px; height: 24px; font-size: 11.5px; line-height: 24px; border-radius: 3px; } .flaps { gap: 2px; } .sb-row { gap: 0.5rem; } .sb-head > span { white-space: nowrap; } .sb-long, .sb-foot { display: none; } }
+  /* ===== Liquid glass: frosted, refractive surfaces over drifting colour blobs ===== */
+  .glass-blobs { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .glass-blobs .blob { position: absolute; width: 48vw; max-width: 640px; min-width: 260px; aspect-ratio: 1 / 1; border-radius: 50%; filter: blur(60px); opacity: 0.75; will-change: transform; }
+  .glass-blobs .b1 { left: -12%; top: -10%; background: radial-gradient(circle at 35% 35%, rgba(201,41,95,0.42), rgba(201,41,95,0) 70%); animation: blob-a 26s ease-in-out infinite; }
+  .glass-blobs .b2 { right: -10%; top: 15%; background: radial-gradient(circle at 60% 40%, rgba(111,211,154,0.48), rgba(111,211,154,0) 70%); animation: blob-b 31s ease-in-out infinite; }
+  .glass-blobs .b3 { left: 30%; bottom: -25%; background: radial-gradient(circle at 50% 50%, rgba(184,150,62,0.40), rgba(184,150,62,0) 70%); animation: blob-c 28s ease-in-out infinite; }
+  @keyframes blob-a { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(10vw, 8vh) scale(1.1); } 66% { transform: translate(4vw, -6vh) scale(0.94); } }
+  @keyframes blob-b { 0%, 100% { transform: translate(0, 0) scale(1); } 40% { transform: translate(-9vw, 10vh) scale(1.08); } 70% { transform: translate(-3vw, -5vh) scale(0.96); } }
+  @keyframes blob-c { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-12vw, -10vh) scale(1.12); } }
+  /* cards */
+  .tier { background: rgba(255,255,255,0.46); -webkit-backdrop-filter: blur(22px) saturate(1.5); backdrop-filter: blur(22px) saturate(1.5);
+    border: 1px solid rgba(255,255,255,0.72); border-top: 4px solid rgba(201,41,95,0.72); border-radius: 22px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(255,255,255,0.3), inset 0 10px 18px -12px rgba(201,41,95,0.35), 0 12px 36px rgba(42,35,27,0.10);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease, opacity 0.45s ease, border-radius 0.6s ease; }
+  .tier.tilting { transition-duration: 0.12s, 0.45s, 0.45s, 0.6s; }
+  .tier-green { border-top-color: rgba(29,77,59,0.72); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(255,255,255,0.3), inset 0 10px 18px -12px rgba(29,77,59,0.35), 0 12px 36px rgba(42,35,27,0.10); }
+  .tier:hover, .tier:focus-within { border-radius: 28px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(255,255,255,0.35), 0 24px 48px rgba(42,35,27,0.14), 0 0 0 1px rgba(255,255,255,0.5); }
+  .tier::before { background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.6), rgba(201,41,95,0.10) 45%, rgba(201,41,95,0) 70%); }
+  .tier-green::before { background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.6), rgba(29,77,59,0.10) 45%, rgba(29,77,59,0) 70%); }
+  .tier::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+    background: linear-gradient(115deg, rgba(255,255,255,0) 44%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 56%); background-size: 300% 100%; background-position: 100% 0;
+    animation: glass-sweep 8.5s ease-in-out infinite; animation-delay: calc(var(--d, 0s) + 1.5s); }
+  @keyframes glass-sweep { 0%, 58% { background-position: 100% 0; } 92%, 100% { background-position: 0% 0; } }
+  .tier.pick { box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 0 0 1.5px rgba(255,255,255,0.9), 0 0 0 5px rgba(201,41,95,0.28), 0 24px 48px rgba(42,35,27,0.16); }
+  .tier.tier-green.pick { box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 0 0 1.5px rgba(255,255,255,0.9), 0 0 0 5px rgba(29,77,59,0.28), 0 24px 48px rgba(42,35,27,0.16); }
+  .pick-badge { background: rgba(201,41,95,0.82); border: 1px solid rgba(255,255,255,0.6); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 8px 18px rgba(201,41,95,0.35); }
+  .tier-green .pick-badge { background: rgba(29,77,59,0.82); box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 8px 18px rgba(29,77,59,0.35); }
+  .flip-btn, .tier-green .flip-btn { background: rgba(255,255,255,0.42); border: 1px solid rgba(255,255,255,0.78); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 3px 10px rgba(42,35,27,0.06); }
+  .flip-btn:hover { background: rgba(201,41,95,0.84); border-color: rgba(255,255,255,0.6); box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), 0 8px 18px rgba(201,41,95,0.25); }
+  .tier-green .flip-btn:hover { background: rgba(29,77,59,0.84); border-color: rgba(255,255,255,0.6); box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), 0 8px 18px rgba(29,77,59,0.25); }
+  .tier-back .btn-fill { background: rgba(201,41,95,0.84); border: 1px solid rgba(255,255,255,0.55); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), 0 8px 20px rgba(201,41,95,0.3); }
+  .tier-back .btn-fill:hover { background: rgba(173,31,79,0.92); }
+  .tier-green .tier-back .btn-fill { background: rgba(29,77,59,0.84); box-shadow: inset 0 1px 0 rgba(255,255,255,0.45), 0 8px 20px rgba(29,77,59,0.3); }
+  .tier-green .tier-back .btn-fill:hover { background: rgba(18,51,42,0.92); }
+  /* picker chips + gliding glass bubble */
+  .picker { position: relative; }
+  .picker .chip { position: relative; z-index: 1; background: rgba(255,255,255,0.45); -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
+    border: 1px solid rgba(255,255,255,0.78); box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 4px 14px rgba(42,35,27,0.06); padding: 0.55rem 1.1rem; }
+  .picker .chip:hover { border-color: rgba(201,41,95,0.4); box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 8px 18px rgba(201,41,95,0.14); }
+  .picker .chip-green:hover { border-color: rgba(29,77,59,0.4); box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 8px 18px rgba(29,77,59,0.14); }
+  .picker .chip[aria-pressed="true"] { background: rgba(201,41,95,0.4); color: #fff; border-color: rgba(255,255,255,0.55); box-shadow: inset 0 1px 0 rgba(255,255,255,0.45); }
+  .picker .chip-green[aria-pressed="true"] { background: rgba(29,77,59,0.4); }
+  .picker-bubble { position: absolute; z-index: 0; left: 0; top: 0; width: 0; height: 0; border-radius: 999px; pointer-events: none; opacity: 0; transform: scale(0.7);
+    background: rgba(201,41,95,0.82); box-shadow: 0 10px 24px rgba(201,41,95,0.35), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -6px 14px rgba(255,255,255,0.12);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    transition: left 0.55s cubic-bezier(0.34, 1.3, 0.64, 1), top 0.55s cubic-bezier(0.34, 1.3, 0.64, 1), width 0.55s cubic-bezier(0.34, 1.3, 0.64, 1), height 0.55s cubic-bezier(0.34, 1.3, 0.64, 1),
+      background 0.35s ease, box-shadow 0.35s ease, opacity 0.25s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .picker-bubble.on { opacity: 1; transform: none; }
+  .picker-bubble.green { background: rgba(29,77,59,0.82); box-shadow: 0 10px 24px rgba(29,77,59,0.35), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -6px 14px rgba(255,255,255,0.12); }
+  .picker-bubble.jump { transition: none; }
+  /* board */
+  .seat-board { position: relative; isolation: isolate; overflow: hidden; background: rgba(18,51,42,0.72); -webkit-backdrop-filter: blur(20px) saturate(1.5); backdrop-filter: blur(20px) saturate(1.5);
+    border: 1px solid rgba(255,255,255,0.22); border-radius: 20px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), inset 0 -1px 0 rgba(255,255,255,0.06), 0 18px 40px rgba(18,51,42,0.28); }
+  .seat-board::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(115deg, rgba(255,255,255,0) 44%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0) 56%); background-size: 300% 100%; background-position: 100% 0;
+    animation: glass-sweep 9.5s ease-in-out infinite; animation-delay: 3s; }
+  .sb-deal { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.3); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.35); }
+  .sb-deal:hover { background: rgba(201,41,95,0.82); border-color: rgba(255,255,255,0.5); }
+  .fchar { background: rgba(255,255,255,0.66); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.8); line-height: 28px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 1px 3px rgba(0,0,0,0.35); }
+  .fchar::after { background: rgba(18,51,42,0.14); }
+  .flaps-price .fchar { background: rgba(255,225,236,0.8); }
+  .seat-board.tone-green .flaps-price .fchar { background: rgba(214,234,223,0.82); }
+  @media (max-width: 560px) { .fchar { line-height: 22px; } }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .tier { background: rgba(255,255,255,0.9); } .picker .chip { background: rgba(255,255,255,0.92); } .seat-board { background: rgba(18,51,42,0.95); } .fchar { background: rgba(255,255,255,0.96); }
+    .picker .chip[aria-pressed="true"] { background: rgba(201,41,95,0.85); } .picker .chip-green[aria-pressed="true"] { background: rgba(29,77,59,0.85); }
+  }
+  /* scroll-linked fan: cards start stacked in the centre and spread to their slots (JS sets translate/rotate/scale) */
+  .js .tiers.fan .tier, .js .tiers.fan .tier.in { opacity: 1; animation: none; }
+  .tiers.fan .tier { will-change: translate, rotate; }
   @media (prefers-reduced-motion: reduce) {
     .js .tier, .js .tier.in, .js .tier.in .check li, .beat, .tier-price, .chip, .pick-badge, .check li::before, .floaters .fl i,
     .js #lessons h2 .w, .js #lessons .sec-intro, .js .picker-q, .js .picker .chip, .js #lessons.lessons-in .picker .chip,
@@ -300,6 +371,8 @@
     .tier::before, .floaters, .burst { display: none; }
     .sb-dot, .fchar.flip, .js .seat-board { animation: none !important; transition: none !important; }
     .js .seat-board { opacity: 1; transform: none; }
+    .glass-blobs .blob, .tier::after, .seat-board::after { animation: none !important; }
+    .picker-bubble { transition: none !important; }
   }
   .tier-close {
     font-family: 'Playfair Display', Georgia, serif; font-weight: 600; font-size: 1.3rem; color: var(--green);
@@ -848,6 +921,7 @@
 </section>
 
 <section id="lessons" class="alt">
+  <div class="glass-blobs" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i></div>
   <div class="floaters" aria-hidden="true">
     <span class="fl" style="--x:3%;--y:14%;--size:2.6rem;--dur:16s;--delay:-2s;--f:0.08"><i>🀄</i></span>
     <span class="fl" style="--x:91%;--y:7%;--size:2rem;--dur:13s;--delay:-6s;--f:0.14"><i>💕</i></span>
@@ -872,6 +946,7 @@
       </div>
     </div>
     <div class="picker" role="group" aria-label="Find the experience that fits you">
+      <span class="picker-bubble" aria-hidden="true"></span>
       <span class="picker-q">Find your seat:</span>
       <button type="button" class="chip" data-tier="0" aria-pressed="false">🌱 Brand new to Mahjong</button>
       <button type="button" class="chip chip-green" data-tier="1" aria-pressed="false">💚 I’ve taken a lesson</button>
@@ -1278,8 +1353,25 @@
   // "Find your seat" picker: a chip spotlights its card with a bounce + confetti (tap again to clear)
   var grid = document.querySelector('.tiers');
   var chips = $$('.picker .chip');
+  var bubble = document.querySelector('.picker-bubble');
+  function moveBubble(chip) {
+    if (!bubble) return;
+    if (!chip) { bubble.classList.remove('on'); return; }
+    var wasOff = !bubble.classList.contains('on');
+    if (wasOff) bubble.classList.add('jump');
+    bubble.style.left = chip.offsetLeft + 'px'; bubble.style.top = chip.offsetTop + 'px';
+    bubble.style.width = chip.offsetWidth + 'px'; bubble.style.height = chip.offsetHeight + 'px';
+    bubble.classList.toggle('green', chip.classList.contains('chip-green'));
+    if (wasOff) { void bubble.offsetWidth; bubble.classList.remove('jump'); }
+    bubble.classList.add('on');
+  }
+  window.addEventListener('resize', function () {
+    var c = chips.filter(function (x) { return x.getAttribute('aria-pressed') === 'true'; })[0];
+    if (c && bubble) { bubble.classList.add('jump'); moveBubble(c); void bubble.offsetWidth; bubble.classList.remove('jump'); }
+  });
   function pick(idx, chip) {
     chips.forEach(function (c) { c.setAttribute('aria-pressed', String(c.getAttribute('data-tier') === String(idx))); });
+    moveBubble(idx === null ? null : chips.filter(function (c) { return c.getAttribute('data-tier') === String(idx); })[0]);
     tiers.forEach(function (t, i) {
       t.classList.toggle('pick', i === idx);
       t.classList.toggle('dim', idx !== null && i !== idx);
@@ -1301,10 +1393,49 @@
       c.addEventListener('pointermove', function (ev) {
         var r = c.getBoundingClientRect();
         c.style.translate = ((ev.clientX - (r.left + r.width / 2)) * 0.22).toFixed(1) + 'px ' + ((ev.clientY - (r.top + r.height / 2)) * 0.3).toFixed(1) + 'px';
+        if (bubble && c.getAttribute('aria-pressed') === 'true') bubble.style.translate = c.style.translate;
       });
-      c.addEventListener('pointerleave', function () { c.style.translate = ''; });
+      c.addEventListener('pointerleave', function () { c.style.translate = ''; if (bubble) bubble.style.translate = ''; });
     }
   });
+
+  // ===== Scroll-linked fan: the three cards start stacked in the centre and spread to their slots as you scroll =====
+  if (grid && tiers.length === 3 && !reduce) {
+    var fanOn = false, fanDx = [], fanTick = false;
+    var ROT = [-9, 0, 9], ZI = [1, 3, 2];
+    function fanMeasure() {
+      var oneRow = tiers.every(function (t) { return Math.abs(t.offsetTop - tiers[0].offsetTop) < 4; });
+      if (!oneRow || window.innerWidth < 900) { fanOff(); return false; }
+      var mid = grid.clientWidth / 2;
+      fanDx = tiers.map(function (t) { return mid - (t.offsetLeft + t.offsetWidth / 2); });
+      if (!fanOn) { fanOn = true; grid.classList.add('fan'); }
+      return true;
+    }
+    function fanOff() {
+      if (!fanOn) return;
+      fanOn = false; grid.classList.remove('fan');
+      tiers.forEach(function (t) { t.style.translate = ''; t.style.rotate = ''; t.style.scale = ''; t.style.zIndex = ''; });
+    }
+    function fanApply() {
+      fanTick = false;
+      if (!fanOn) return;
+      var r = grid.getBoundingClientRect(), vh = window.innerHeight;
+      var p = (vh - r.top) / (vh - vh * 0.28);
+      p = Math.max(0, Math.min(1, p));
+      var e = 1 - Math.pow(1 - p, 3), k = 1 - e;
+      tiers.forEach(function (t, i) {
+        if (k < 0.001) { t.style.translate = ''; t.style.rotate = ''; t.style.scale = ''; t.style.zIndex = ''; return; }
+        t.style.translate = (fanDx[i] * k).toFixed(1) + 'px ' + (i === 1 ? 0 : 18 * k).toFixed(1) + 'px';
+        t.style.rotate = (ROT[i] * k).toFixed(2) + 'deg';
+        t.style.scale = String((1 - (i === 1 ? 0 : 0.06) * k).toFixed(3));
+        t.style.zIndex = String(ZI[i]);
+      });
+    }
+    var fanRequest = function () { if (!fanTick) { fanTick = true; requestAnimationFrame(fanApply); } };
+    window.addEventListener('scroll', fanRequest, { passive: true });
+    window.addEventListener('resize', function () { if (fanMeasure()) fanApply(); });
+    if (fanMeasure()) fanApply();
+  }
 
   // ===== Split-flap "Now seating" board: tiles flip through characters like a departures board =====
   var sb = document.getElementById('seat-board');
