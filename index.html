@@ -260,6 +260,36 @@
     opacity: 0; transform: rotate(-4deg) scale(0); transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease; }
   .tier.pick .pick-badge { opacity: 1; transform: rotate(-4deg) scale(1); }
   .tier-green .pick-badge { background: var(--green); box-shadow: 0 6px 16px rgba(29,77,59,0.35); }
+  /* split-flap "Now seating" board (departures-board style; tiles flip through characters) */
+  .seat-lead { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.2rem 2rem; align-items: center; margin: 0 0 1.4rem; }
+  .seat-lead .sec-intro { margin: 0; }
+  .seat-board { background: linear-gradient(180deg, #17402f, var(--green-deep)); border-radius: 16px; padding: 0.85rem 1rem 0.75rem; color: var(--cream); max-width: 100%;
+    box-shadow: 0 14px 34px rgba(18,51,42,0.28), inset 0 1px 0 rgba(255,255,255,0.08); font-family: 'Montserrat', 'Segoe UI', sans-serif; }
+  .sb-head { display: flex; align-items: center; gap: 0.5rem; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; }
+  .sb-dot { width: 8px; height: 8px; border-radius: 50%; background: #6fd39a; box-shadow: 0 0 8px #6fd39a; animation: sb-blink 1.6s ease-in-out infinite; flex: none; }
+  @keyframes sb-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+  .sb-deal { margin-left: auto; font: inherit; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; white-space: nowrap;
+    color: var(--cream); background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); border-radius: 999px; padding: 0.32rem 0.7rem;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .sb-deal:hover { background: var(--raspberry); border-color: var(--raspberry); transform: translateY(-1px); }
+  .sb-deal:active { transform: scale(0.95); }
+  .sb-deal:focus-visible, .sb-row:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .sb-row { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; cursor: pointer; border-radius: 8px; }
+  .flaps { display: inline-flex; gap: 3px; perspective: 500px; }
+  .fchar { width: 22px; height: 30px; border-radius: 4px; position: relative; text-align: center; font-size: 15px; line-height: 30px; font-weight: 800; color: var(--green-deep);
+    background: linear-gradient(180deg, #fffdf6 0%, #f4ecdc 100%); box-shadow: 0 1px 0 rgba(0,0,0,0.4), inset 0 -1px 0 rgba(0,0,0,0.05); backface-visibility: hidden; }
+  .fchar::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(18,51,42,0.18); }
+  .fchar.flip { animation: sb-flap 70ms linear; }
+  @keyframes sb-flap { 0% { transform: rotateX(0deg); } 50% { transform: rotateX(-86deg); } 100% { transform: rotateX(0deg); } }
+  .flaps-price .fchar { color: var(--raspberry); background: linear-gradient(180deg, #fff3f7 0%, #f6dee7 100%); }
+  .seat-board.tone-green .flaps-price .fchar { color: var(--green); background: linear-gradient(180deg, #f1faf4 0%, #d6eadf 100%); }
+  .seat-board.locked .flaps-price { filter: drop-shadow(0 0 9px rgba(201,41,95,0.55)); }
+  .seat-board.locked.tone-green .flaps-price { filter: drop-shadow(0 0 9px rgba(111,211,154,0.6)); }
+  .sb-foot { font-size: 0.62rem; letter-spacing: 0.06em; color: rgba(250,245,236,0.55); margin-top: 0.55rem; }
+  .js .seat-board { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+  .js #lessons.lessons-in .seat-board { opacity: 1; transform: none; transition-delay: 0.45s; }
+  @media (max-width: 900px) { .seat-lead { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .seat-board { padding: 0.75rem 0.7rem 0.65rem; } .fchar { width: 15px; height: 24px; font-size: 11.5px; line-height: 24px; border-radius: 3px; } .flaps { gap: 2px; } .sb-row { gap: 0.5rem; } .sb-head > span { white-space: nowrap; } .sb-long, .sb-foot { display: none; } }
   @media (prefers-reduced-motion: reduce) {
     .js .tier, .js .tier.in, .js .tier.in .check li, .beat, .tier-price, .chip, .pick-badge, .check li::before, .floaters .fl i,
     .js #lessons h2 .w, .js #lessons .sec-intro, .js .picker-q, .js .picker .chip, .js #lessons.lessons-in .picker .chip,
@@ -268,6 +298,8 @@
     .tier:hover, .tier:focus-within, .tier.pick, .tiers.has-pick .tier.dim, .tiers.has-pick .tier.dim:hover, .tiers.has-pick .tier.dim.flipped { transform: none; }
     .tier:hover .tier-price, .tier.pick .tier-price, .check li:hover::before, .chip:hover, .chip:active, .flip-btn:hover { transform: none; }
     .tier::before, .floaters, .burst { display: none; }
+    .sb-dot, .fchar.flip, .js .seat-board { animation: none !important; transition: none !important; }
+    .js .seat-board { opacity: 1; transform: none; }
   }
   .tier-close {
     font-family: 'Playfair Display', Georgia, serif; font-weight: 600; font-size: 1.3rem; color: var(--green);
@@ -828,7 +860,17 @@
   <div class="in">
     <div class="sec-head"><span class="label">Learn &amp; play</span></div>
     <h2>Which Lady Mahjong experience is right for you? <span class="beat">💕</span><span class="beat beat-2">💚</span></h2>
-    <p class="sec-intro">Whether you’re brand new to Mahjong or ready to sharpen your skills, there’s a seat at the table for you!</p>
+    <div class="seat-lead">
+      <p class="sec-intro">Whether you’re brand new to Mahjong or ready to sharpen your skills, there’s a seat at the table for you!</p>
+      <div class="seat-board" id="seat-board">
+        <div class="sb-head"><span class="sb-dot" aria-hidden="true"></span><span>Now seating</span><button type="button" class="sb-deal">🀄 <span class="sb-long">Can’t decide? </span>Deal me in</button></div>
+        <div class="sb-row" role="button" tabindex="0" aria-label="Beginner Lesson, $50. Press for the next experience.">
+          <span class="flaps flaps-name" aria-hidden="true"></span>
+          <span class="flaps flaps-price" aria-hidden="true"></span>
+        </div>
+        <div class="sb-foot">Tap the board to flip through · pick a chip to lock it in</div>
+      </div>
+    </div>
     <div class="picker" role="group" aria-label="Find the experience that fits you">
       <span class="picker-q">Find your seat:</span>
       <button type="button" class="chip" data-tier="0" aria-pressed="false">🌱 Brand new to Mahjong</button>
@@ -1087,6 +1129,7 @@
   var fine = mq('(hover: hover) and (pointer: fine)');
   var $$ = function (s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); };
   var lessons = document.getElementById('lessons');
+  var boardShow = function () {}, boardLock = function () {};
 
   // Learn & Play heading: split into words so they can cascade in
   var h2 = lessons && lessons.querySelector('h2');
@@ -1193,7 +1236,7 @@
   var tiers = $$('.tier');
   if (!reduce && fine) {
     tiers.forEach(function (t) {
-      t.addEventListener('pointerenter', function () { t.classList.add('tilting'); });
+      t.addEventListener('pointerenter', function () { t.classList.add('tilting'); boardShow(tiers.indexOf(t)); });
       t.addEventListener('pointermove', function (ev) {
         var r = t.getBoundingClientRect();
         if (!r.width || !r.height) return;
@@ -1243,6 +1286,7 @@
       if (i === idx) { t.classList.remove('bounce'); void t.offsetWidth; t.classList.add('bounce'); }
     });
     if (grid) grid.classList.toggle('has-pick', idx !== null);
+    boardLock(idx);
     if (idx !== null && chip) {
       var r = chip.getBoundingClientRect();
       burst(r.left + r.width / 2, r.top + r.height / 2, chip.classList.contains('chip-green') ? ['\uD83D\uDC9A', '\u2728', '\uD83C\uDC04'] : ['\uD83D\uDC95', '\u2728', '\uD83C\uDC04'], 14);
@@ -1261,6 +1305,95 @@
       c.addEventListener('pointerleave', function () { c.style.translate = ''; });
     }
   });
+
+  // ===== Split-flap "Now seating" board: tiles flip through characters like a departures board =====
+  var sb = document.getElementById('seat-board');
+  if (sb && tiers.length) {
+    var CH = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$.,\'&-!?';
+    var NAME_W = 15, PRICE_W = 3;
+    var clean = function (s, w) { return (s || '').replace(/[^\x20-\x7E]/g, '').replace(/\s+/g, ' ').trim().toUpperCase().slice(0, w); };
+    var items = tiers.map(function (t) {
+      var h = t.querySelector('.tier-front h3'), pr = t.querySelector('.tier-price');
+      return { name: clean(h && h.textContent, NAME_W), price: clean(pr && pr.textContent, PRICE_W) };
+    });
+    var rowEl = sb.querySelector('.sb-row');
+    var makeTiles = function (el, n) {
+      var arr = [];
+      for (var i = 0; i < n; i++) { var s = document.createElement('span'); s.className = 'fchar'; s.innerHTML = '&nbsp;'; s.setAttribute('data-ch', ' '); el.appendChild(s); arr.push(s); }
+      return arr;
+    };
+    var nameTiles = makeTiles(sb.querySelector('.flaps-name'), NAME_W), priceTiles = makeTiles(sb.querySelector('.flaps-price'), PRICE_W);
+    var gen = 0, cur = -1, locked = false, timer = null, visible = false, hovering = false;
+    var STEP = 70, STAGGER = 28;
+    function flipGroup(tiles, text, g, scramble, offset) {
+      text = (text + new Array(tiles.length + 1).join(' ')).slice(0, tiles.length);
+      tiles.forEach(function (tile, i) {
+        var target = text.charAt(i), curCh = tile.getAttribute('data-ch') || ' ';
+        var ci = Math.max(0, CH.indexOf(curCh)), ti = CH.indexOf(target);
+        if (ti < 0) { target = ' '; ti = 0; }
+        var path = [], k;
+        if (scramble) { var n = 5 + Math.floor(Math.random() * 7); for (k = 0; k < n; k++) path.push(CH.charAt(Math.floor(Math.random() * CH.length))); path.push(target); }
+        else {
+          var steps = (ti - ci + CH.length) % CH.length;
+          if (!steps) return;
+          var n2 = Math.min(steps, 10);
+          for (k = n2 - 1; k >= 0; k--) path.push(CH.charAt((ti - k + CH.length) % CH.length));
+        }
+        if (reduce) { tile.textContent = target === ' ' ? '\u00a0' : target; tile.setAttribute('data-ch', target); return; }
+        var delay = (offset || 0) + i * STAGGER;
+        path.forEach(function (ch, j) {
+          setTimeout(function () {
+            if (g !== gen) return;
+            tile.classList.remove('flip'); void tile.offsetWidth; tile.classList.add('flip');
+            setTimeout(function () { if (g !== gen) return; tile.textContent = ch === ' ' ? '\u00a0' : ch; tile.setAttribute('data-ch', ch); }, 35);
+          }, delay + j * STEP);
+        });
+      });
+    }
+    function show(idx, scramble) {
+      idx = ((idx % items.length) + items.length) % items.length;
+      if (idx === cur && !scramble) return;
+      cur = idx;
+      var g = ++gen;
+      flipGroup(nameTiles, items[idx].name, g, scramble, 0);
+      flipGroup(priceTiles, items[idx].price, g, scramble, 120);
+      rowEl.setAttribute('aria-label', items[idx].name + ', ' + items[idx].price + '. Press for the next experience.');
+      sb.setAttribute('data-cur', String(idx));
+      sb.classList.toggle('tone-green', tiers[idx].classList.contains('tier-green'));
+    }
+    function schedule() {
+      clearTimeout(timer);
+      if (locked || !visible || hovering || reduce) return;
+      timer = setTimeout(function () { show(cur + 1); schedule(); }, 4200);
+    }
+    boardShow = function (idx) { if (!locked && idx >= 0) { show(idx); schedule(); } };
+    boardLock = function (idx) {
+      locked = idx !== null;
+      sb.classList.toggle('locked', locked);
+      if (locked) { show(idx); clearTimeout(timer); } else schedule();
+    };
+    if (!('IntersectionObserver' in window) || reduce) { visible = true; show(0); schedule(); }
+    else {
+      var iob = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          visible = e.isIntersecting;
+          if (visible) { if (cur < 0) show(0, true); schedule(); } else clearTimeout(timer);
+        });
+      }, { threshold: 0.4 });
+      iob.observe(sb);
+    }
+    rowEl.addEventListener('click', function () { if (locked) pick((cur + 1) % items.length, null); else { show(cur + 1); schedule(); } });
+    rowEl.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); rowEl.click(); } });
+    sb.addEventListener('pointerenter', function () { hovering = true; clearTimeout(timer); });
+    sb.addEventListener('pointerleave', function () { hovering = false; schedule(); });
+    var deal = sb.querySelector('.sb-deal');
+    if (deal) deal.addEventListener('click', function () {
+      var idx = Math.floor(Math.random() * items.length);
+      if (items.length > 1 && idx === cur) idx = (idx + 1) % items.length;
+      show(idx, true);
+      pick(idx, deal);
+    });
+  }
 })();
 </script>
 <script>
